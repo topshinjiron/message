@@ -57,6 +57,32 @@ $(function () {
       });
     });
 
+    $('button[type=submit].save,button[type=button].save').off().click(function () {
+      if($('.messageField').val() !== '' && $('.writerField').val() !== '' && $('.startDate').val() !== '' && $('.endField').val() !== ''){
+      // モーダルコンテンツとオーバーレイをフェードアウト
+      $('.textarea').removeClass('open');
+      $(modal).fadeOut('fast');
+      //$(".modal-wrap").hide();
+      $(modal).unwrap();
+      $('main').prepend('<div class="alart">登録しました</div>');
+      setTimeout(function () {
+        $('.alart').fadeOut();
+        setTimeout(function () {
+          $('.alart').remove();
+        }, 1000);
+      }, 3000);
+
+      $('.modal-overlay').fadeOut('fast', function () {
+        // html、bodyの固定解除
+        $('html, body').removeClass('lock');
+        // オーバーレイを削除
+        $('.modal-overlay').remove();
+        // モーダルコンテンツを囲む要素を削除
+        // $(modal).unwrap("<div class='modal-wrap'></div>");
+      });
+    }
+    });
+
     // リサイズしたら表示位置を再取得
     $(window).on('resize', function () {
       modalResize();

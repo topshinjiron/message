@@ -42,6 +42,7 @@
             </div>
           </div>
         </div>
+        <p class="hit"></p>
         <table id="data-table">
           <thead>
             <tr>
@@ -115,8 +116,7 @@
   <script>
   var messages = @json($all_messages);
   var dataForId = @json($ID_Maker);
-  console.log(messages, "messages");
-  console.log(dataForId, "dataForId");
+  var changeFlag = 1;
 
   function createValidation() {
     const startDateInput = $('.startField');
@@ -162,7 +162,7 @@
     }
   }
 
-  function showTable() {
+  function showTable(visibleRowCount=0) {
     var table = $('#data-table tbody');
     for (var i = 0; i < messages.length; i++) {
       var row = $('<tr>');
@@ -359,88 +359,160 @@
 
       if (searchText === '') {
         currentPage = 1;
-        updatePagination();
+        changeFlag = 1;
+        //updatePagination();
         displayPage(currentPage);
+        $('.nothing').hide();
+        $('.hit').text('');
+        console.log('Search text is empty');
+        //$('#data-table tbody tr').removeClass('hide');
         return;
       }
 
-      $('#data-table tbody tr').each(function() {
-        var rowText = $(this).text().toLowerCase();
+      var total = $('#data-table tbody tr').length;
 
+      $('#data-table tbody tr').each(function() {
+        var rowText = $(this).find('textarea').text().toLowerCase();
+        console.log(rowText);
         // Check text content in td and input values
-        if (rowText.includes(searchText) || $(this).find('input[type="datetime-local"][value*="' + searchText +
-            '"]').length > 0) {
-          $(this).show();
+        if (rowText.includes(searchText)) {
+          $(this).removeClass('hide');
         } else {
-          $(this).hide();
+          $(this).addClass('hide');
         }
       });
 
       // Show or hide the "nothing" message based on the search result
-      if ($('#data-table tbody tr:visible').length > 0) {
+      var visibleRowCount = $('#data-table tbody tr:visible').length;
+
+      if (visibleRowCount > 0) {
         $('.nothing').hide();
+        $('.hit').text(visibleRowCount + "件ヒットしました");
+        changeFlag = 0;
+        //showTable(visibleRowCount);
       } else {
         $('.nothing').show();
+        $('.hit').text('');
       }
-
     });
 
-    const itemsPerPage = 50;
-    const totalItems = messages.length;
-    let currentPage = 1;
+    if (changeFlag == 1) {
+      const itemsPerPage = 50;
+      const totalItems = messages.length;
+      let currentPage = 1;
 
-    function displayPage(page) {
-      const start = (page - 1) * itemsPerPage;
-      const end = start + itemsPerPage;
-      const messages = document.querySelectorAll('#data-table tbody tr');
+      function displayPage(page) {
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const messagesShow = document.querySelectorAll('#data-table tbody tr');
 
-      messages.forEach((message, index) => {
-        if (index >= start && index < end) {
-          message.style.display = 'table-row';
-        } else {
-          message.style.display = 'none';
-        }
-      });
-    }
-
-    function updatePagination() {
-      const totalPages = Math.ceil(totalItems / itemsPerPage);
-      const pager = document.getElementById('pager');
-      pager.innerHTML = '';
-
-      const prevButton = document.createElement('a');
-      prevButton.textContent = '<';
-      prevButton.href = '#';
-      prevButton.addEventListener('click', () => {
-        currentPage = Math.max(currentPage - 1, 1);
-        displayPage(currentPage);
-      });
-      pager.appendChild(prevButton);
-
-      for (let i = 1; i <= totalPages; i++) {
-        const pageLink = document.createElement('a');
-        pageLink.textContent = i;
-        pageLink.href = '#';
-        pageLink.addEventListener('click', () => {
-          currentPage = i;
-          displayPage(currentPage);
+        messagesShow.forEach((message, index) => {
+          if (index >= start && index < end) {
+            $(message).removeClass('hide');
+          } else {
+            $(message).addClass('hide');
+          }
         });
-        pager.appendChild(pageLink);
       }
 
-      const nextButton = document.createElement('a');
-      nextButton.textContent = '>';
-      nextButton.href = '#';
-      nextButton.addEventListener('click', () => {
-        currentPage = Math.min(currentPage + 1, totalPages);
+      function updatePagination() {
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const pager = document.getElementById('pager');
+        pager.innerHTML = '';
+
+        const prevButton = document.createElement('a');
+        prevButton.textContent = '<';
+        prevButton.href = '#';
+        prevButton.addEventListener('click', () => {
+          currentPage = Math.max(currentPage - 1, 1);
+          displayPage(currentPage);
+        });
+        pager.appendChild(prevButton);
+
+        for (let i = 1; i <= totalPages; i++) {
+          const pageLink = document.createElement('a');
+          pageLink.textContent = i;
+          pageLink.href = '#';
+          pageLink.addEventListener('click', () => {
+            currentPage = i;
+            displayPage(currentPage);
+          });
+          pager.appendChild(pageLink);
+        }
+
+        const nextButton = document.createElement('a');
+        nextButton.textContent = '>';
+        nextButton.href = '#';
+        nextButton.addEventListener('click', () => {
+          currentPage = Math.min(currentPage + 1, totalPages);
+          displayPage(currentPage);
+        });
+        pager.appendChild(nextButton);
+
         displayPage(currentPage);
-      });
-      pager.appendChild(nextButton);
+      }
 
-      displayPage(currentPage);
+      updatePagination();
+    } else {
+      const itemsPerPage = 50;
+      const totalItems = visibleRowCount;
+      let currentPage = 1;
+
+      function displayPage(page) {
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const messagesShow_ = document.querySelectorAll('#data-table tbody tr');
+        const messagesShow = Array.from(messagesShow_).filter(row => {
+          return window.getComputedStyle(row).display !== 'none';
+        });
+
+        messagesShow.forEach((message, index) => {
+          if (index >= start && index < end) {
+            $(message).removeClass('hide');
+          } else {
+            $(message).addClass('hide');
+          }
+        });
+      }
+
+      function updatePagination() {
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const pager = document.getElementById('pager');
+        pager.innerHTML = '';
+
+        const prevButton = document.createElement('a');
+        prevButton.textContent = '<';
+        prevButton.href = '#';
+        prevButton.addEventListener('click', () => {
+          currentPage = Math.max(currentPage - 1, 1);
+          displayPage(currentPage);
+        });
+        pager.appendChild(prevButton);
+
+        for (let i = 1; i <= totalPages; i++) {
+          const pageLink = document.createElement('a');
+          pageLink.textContent = i;
+          pageLink.href = '#';
+          pageLink.addEventListener('click', () => {
+            currentPage = i;
+            displayPage(currentPage);
+          });
+          pager.appendChild(pageLink);
+        }
+
+        const nextButton = document.createElement('a');
+        nextButton.textContent = '>';
+        nextButton.href = '#';
+        nextButton.addEventListener('click', () => {
+          currentPage = Math.min(currentPage + 1, totalPages);
+          displayPage(currentPage);
+        });
+        pager.appendChild(nextButton);
+
+        displayPage(currentPage);
+      }
+      updatePagination();
     }
-
-    updatePagination();
   }
 
   showTable();

@@ -491,6 +491,12 @@ input[type="date"] {
   margin: 0px 30px;
 }
 
+/* .logout svg {
+  fill: #0f334b !important;
+  width: 28px;
+  height: 28px;
+} */
+
 @media screen and (max-width: 736px) {
   .logout {
     top: 0;
@@ -824,6 +830,11 @@ header nav ul li:nth-child(1) a:hover {
 
 #result #data table#data-table tbody tr {
   transition: all .3s ease-in-out;
+  display: table-row !important;
+}
+
+#result #data table#data-table tbody tr.hide {
+  display: none !important;
 }
 
 @media screen and (max-width: 736px) {
@@ -833,6 +844,10 @@ header nav ul li:nth-child(1) a:hover {
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 20px;
+  }
+
+  #result #data table#data-table tbody tr.hide {
+    display: none !important;
   }
 }
 
@@ -906,8 +921,8 @@ header nav ul li:nth-child(1) a:hover {
 
 @media screen and (max-width: 1540px) {
   #result #data table#data-table tbody tr td .btn-area button.edit:before {
-    margin: 0 15px 0 0;    
-  }  
+    margin: 0 15px 0 0;
+  }
 
   .btn-area {
     width: 30%;
@@ -953,14 +968,14 @@ header nav ul li:nth-child(1) a:hover {
   top: -10px;
   color: #0f334b;
   line-height: 1.7;
-  height:3.6em;
+  height: 3.6em;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
-#result #data table#data-table tbody tr td textarea:after{
+#result #data table#data-table tbody tr td textarea:after {
   content: '...';
 }
 
@@ -970,14 +985,14 @@ header nav ul li:nth-child(1) a:hover {
     padding: 5px;
     left: 0;
     top: -5px;
-    height:1.8em;
+    height: 1.8em;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
 
-  #result #data table#data-table tbody tr td textarea:after{
+  #result #data table#data-table tbody tr td textarea:after {
     content: '...';
   }
 }
@@ -1302,4 +1317,17 @@ p.closemodal a {
 #pager span {
   background: #FFF;
   border-radius: 50%;
+}
+
+.alart {
+  background: #C00;
+  color: #FFF;
+  padding: 10px;
+  text-align: center;
+}
+
+.hit {
+  letter-spacing: .05em;
+  margin: 0px 0px 10px 10px;
+  color: #991010;
 }
